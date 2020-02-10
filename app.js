@@ -6,6 +6,7 @@ app.use(async (ctx, next) => {
   const a = await next()
 })
 
+// async 作用：1、强制函数内部返回 promise。2、函数内使用了 await
 app.use(async (ctx, next) => {
   const axios = require('axios')
   const start = Date.now()
