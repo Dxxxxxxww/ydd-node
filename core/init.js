@@ -1,6 +1,7 @@
 const requireDirectory = require('require-directory')
 const Router = require('koa-router')
 
+// 自动导入路由
 class InitManager {
 	// 入口文件
 	static initCore(app) {
