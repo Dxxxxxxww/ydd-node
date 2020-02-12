@@ -3,7 +3,7 @@ const Koa = require('koa')
 const parser = require('koa-bodyparser')
 const InitManager = require('./core/init')
 const catchError = require('./middlewares/exception') //导入全局捕获异常中间件
-
+// require('./core/lin-validator-v2')
 const app = new Koa()
 app.use(parser()) //调用后返回中间件
 app.use(catchError)

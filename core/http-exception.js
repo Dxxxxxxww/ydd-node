@@ -1,3 +1,4 @@
+/** 定义各种异常类*/ 
 class HttpException extends Error {
 	constructor(msg = '', errorCode = 10000, status = 200) {
 		super()

@@ -18,7 +18,6 @@ class InitManager {
 		//process.cwd() 可以找到绝对路径
 		const apiDirectory = `${process.cwd()}/app/api`
 		const whenModulesLoad = function(obj) {
-			console.log(obj, obj instanceof Router)
 			if (obj instanceof Router) { //book
 				InitManager.app.use(obj.routes())
 			} else {
