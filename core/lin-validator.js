@@ -1,5 +1,5 @@
 /**
- * Lin-Validator v1
+ * Lin-Validator v1  dxx注： 此校验器是用于验证 C<->S 之间的参数校验
  * 作者：7七月
  * 微信公众号：林间有风
  */
