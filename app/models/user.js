@@ -1,8 +1,11 @@
+const bcrypt = require('bcryptjs')
 //如果导出是 { sequelize } 则导入想改名形式为 { sequelize: db } 适用于 npm 包导入想改名，原理：解构赋值
 //如果到出是{ db: sequelize }，则导入就为 db
 const { sequelize } = require('../../core/db')
 const { Sequelize, Model } = require('sequelize')
-
+/**
+ * user 数据表
+ */
 class User extends Model {}
 
 User.init(
@@ -21,8 +24,20 @@ User.init(
 			autoIncrement: true
 		},
 		nickname: Sequelize.STRING,
-		email: Sequelize.STRING,
-		password: Sequelize.STRING,
+		email: {
+			type: Sequelize.STRING(128),
+			unique: true
+		},
+		password: {
+      type: Sequelize.STRING,
+      // 观察者模式
+      // model 的属性操作，每个字段都有这个 set 函数
+			set(val) {
+				const salt = bcrypt.genSaltSync(10)
+        const pwd = bcrypt.hashSync(val, salt)
+        this.setDataValue('password',pwd)
+			}
+		},
 		openid: {
 			type: Sequelize.STRING(64),
 			unique: true
@@ -35,8 +50,10 @@ User.init(
 		//对于小程序，公众号，用户有唯一且不变的标识   unionId
 	},
 	{
-    sequelize,
-    tableName: 'user'
-  }
-  //数据迁移 当表中已有大量数据时，得用 sql 更新，使用成本高，有风险
+		sequelize,
+		tableName: 'user'
+	}
+	//数据迁移 当表中已有大量数据时，得用 sql 更新，使用成本高，有风险
 )
+
+module.exports = { User }

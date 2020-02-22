@@ -3,13 +3,13 @@ const Router = require('koa-router')
 const router = new Router()
 const { PositiveIntegerValidator } = require('../../validators/validator')
 
-router.post('/v1/:id/book/latest', (ctx, next) => {
+router.post('/v1/:id/book/latest', async (ctx, next) => {
 	const params = ctx.params //url里的参数 这里是 :id
 	const querys = ctx.request.query //url里 ？ 后的参数
 	const headers = ctx.request.header //放在请求头里的参数
 	const bodys = ctx.request.body //post的参数
 	// abc //测试未知异常
-	const v = new PositiveIntegerValidator().validate(ctx)
+	const v = await new PositiveIntegerValidator().validate(ctx)
 	const id = v.get('path.id', false)
 	ctx.body = 'success'
 

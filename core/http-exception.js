@@ -13,6 +13,18 @@ class HttpException extends Error {
 }
 
 /**
+ * @description 请求成功
+ */
+class Success extends HttpException {
+  constructor(msg = '成功', errorCode = 0) {
+    super()
+    this.msg = msg
+    this.errorCode = errorCode
+    this.status = 201
+  }
+}
+
+/**
  * 参数异常类，继承于通信异常类
  */
 class ParameterException extends HttpException {
@@ -25,6 +37,7 @@ class ParameterException extends HttpException {
 }
 
 module.exports = {
-	HttpException,
+  HttpException,
+  Success,
 	ParameterException
 }
