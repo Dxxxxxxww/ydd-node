@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-// const { HttpException } = require('../../../core/http-exception')
+// const { HttpException } = require('../../../core/http-exception') 不需要每个文件导入，使用挂在全局的方式
 const router = new Router()
 const { PositiveIntegerValidator } = require('../../validators/validator')
 

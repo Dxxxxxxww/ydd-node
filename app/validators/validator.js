@@ -11,6 +11,10 @@ class PositiveIntegerValidator extends LinValidator {
 	}
 }
 
+/**
+ * @description 注册验证器
+ * 用于抛出参数异常
+ */
 class RegisterValidator extends LinValidator {
 	constructor() {
 		super()
@@ -54,6 +58,20 @@ class RegisterValidator extends LinValidator {
 			throw new Error('email已存在')
 		}
 	}
+}
+
+// web 端登录 账号+密码 account + password
+// app 小程序登录，多元化
+// 比如小程序 直接微信登录，因为微信已经把用户识别了，登录小程序的必然是一个合法用户
+// 小程序登录 只需要获取 account
+// 手机登录 (验证码)
+/**
+ * @description token 校验器
+ */
+class TokenValidator extends LinValidator {
+  constructor() {
+    super()
+  }
 }
 
 module.exports = {

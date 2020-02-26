@@ -6,6 +6,7 @@ const catchError = require('./middlewares/exception') //导入全局捕获异常
 // require('./app/models/user')
 
 const app = new Koa()
+// console.log('app-',app)
 app.use(parser()) //调用后返回中间件
 app.use(catchError) //当有中间件出现异常时会被捕获
 InitManager.initCore(app)
