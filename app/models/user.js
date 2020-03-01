@@ -6,7 +6,41 @@ const { Sequelize, Model } = require('sequelize')
 /**
  * user 数据表
  */
-class User extends Model {}
+class User extends Model {
+	/**
+	 * @description 验证密码是否正确
+	 * @param {*} email 输入的 email
+	 * @param {*} plainPassword 输入的密码
+	 * @returns 数据项 Object
+	 */
+	static async verifyEmailPassword(email, plainPassword) {
+		const user = await User.findOne({
+			where: {
+				email
+			}
+		})
+		if (!user) {
+			throw new global.errs.NotFound('账号不存在')
+		}
+		const correct = bcrypt.compareSync(plainPassword, user.password)
+		if (!correct) {
+			throw new global.errs.AuthFailed('密码不正确')
+		}
+		return user
+	}
+	/**
+	 * @description 验证 email 是否已经存在
+	 * @param {*} email 输入的 email
+	 */
+	static async isHaveEmail(email) {
+		const user = await User.findOne({
+			where: { email }
+		})
+		if (user) {
+			throw new Error('email已存在')
+		}
+	}
+}
 
 User.init(
 	{
@@ -29,13 +63,13 @@ User.init(
 			unique: true
 		},
 		password: {
-      type: Sequelize.STRING,
-      // 观察者模式
-      // model 的属性操作，每个字段都有这个 set 函数
+			type: Sequelize.STRING,
+			// 观察者模式
+			// model 的属性操作，每个字段都有这个 set 函数
 			set(val) {
 				const salt = bcrypt.genSaltSync(10)
-        const pwd = bcrypt.hashSync(val, salt)
-        this.setDataValue('password',pwd)
+				const pwd = bcrypt.hashSync(val, salt)
+				this.setDataValue('password', pwd)
 			}
 		},
 		openid: {

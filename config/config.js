@@ -10,5 +10,9 @@ module.exports = {
 		port: 3306,
 		user: 'root',
 		password: 'qwerd123'
-	}
+  },
+  security: {
+    secretKey: 'dxxyttxixuxixixu',//通常情况下这个key要复杂且无规律，否则token易被破解
+    expiresIn:60*60,//令牌过期时间，这里是1h
+  }
 }

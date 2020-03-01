@@ -1,5 +1,12 @@
 const Router = require('koa-router')
-const router = new Router()
+const { TokenValidator } = require('../../validators/validator')
+const { LoginType } = require('../../lib/enum')
+const { User } = require('../../models/user')
+const { generateToken } = require('../../../core/util')
+
+const router = new Router({
+	prefix: '/v1/token'
+})
 
 //传统网站，涉及到登录时，就会用到 session 有状态的
 // session open -> 取数据 -> close
@@ -9,4 +16,28 @@ const router = new Router()
 //不管用户如何登录，都转化为对令牌的获取 -> 令牌颁布
 router.post('/', async ctx => {
 	//编写接口的第一步是编写校验器
+	const v = await new TokenValidator().validate(ctx)
+	let token
+	switch (v.get('body.type')) {
+		case LoginType.USER_EMAIL:
+			token = await emailLogin(v.get('body.account'), v.get('body.secret'))
+			break
+		case LoginType.USER_MINI_PROGRAM:
+			break
+		default:
+			//最好在这里抛出一个异常
+			throw new global.errs.ParameterException('没有相应的处理函数')
+			break
+	}
+	ctx.body = {
+		token
+	}
 })
+
+async function emailLogin(account, secret) {
+	const user = await User.verifyEmailPassword(account, secret)
+	const token = generateToken(user.id, 2)
+	return token
+}
+
+module.exports = router
