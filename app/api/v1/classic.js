@@ -9,6 +9,7 @@ const router = new Router({
 // 这里的 new Auth().m m 是 get 修饰的属性，不是方法，所以不需要加 ()。
 // js 里的 getter 是获取属性，setter 是设置属性。
 router.get('/latest', new Auth().m, async (ctx, next) => {
+  ctx.body = ctx.auth.uid
 	//服务端渲染
 	// const html = `
 	//     <h1>koa2 request post demo</h1>
