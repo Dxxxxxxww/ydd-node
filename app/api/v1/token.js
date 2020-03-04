@@ -3,6 +3,7 @@ const { TokenValidator } = require('../../validators/validator')
 const { LoginType } = require('../../lib/enum')
 const { User } = require('../../models/user')
 const { generateToken } = require('../../../core/util')
+const { Auth } = require('../../../middlewares/auth')
 
 const router = new Router({
 	prefix: '/v1/token'
@@ -37,8 +38,10 @@ router.post('/', async ctx => {
 async function emailLogin(account, secret) {
   const user = await User.verifyEmailPassword(account, secret)
   // 生成 token
-	const token = generateToken(user.id, 2)
-	return token
+	const token = generateToken(user.id, Auth.USER)
+  return token
+  // 权限是一个复杂的东西
+  // 我们需要通过权限来限制 
 }
 
 module.exports = router

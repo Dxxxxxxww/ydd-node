@@ -4,12 +4,12 @@
  * @returns boolean
  */
 function isThisType(val) {
-  for (const key in this) {
-    if (this[key] == val) {
-      return true
-    }
-  }
-  return false
+	for (const key in this) {
+		if (this[key] == val) {
+			return true
+		}
+	}
+	return false
 }
 // JS 模拟枚举，但不是真正的枚举，JS 难以实现真正的枚举（JS 对象无法实现枚举的一些特性）
 const LoginType = {
@@ -20,6 +20,15 @@ const LoginType = {
 	isThisType
 }
 
+const AuthLevel = {
+	USER: 8,
+	USER_VIP: 9,
+	USER_SVIP: 10,
+	ADMIN: 16,
+	SUPER_ADMIN: 32
+}
+
 module.exports = {
-  LoginType
+	LoginType,
+	AuthLevel
 }
