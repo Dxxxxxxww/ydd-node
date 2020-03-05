@@ -36,12 +36,13 @@ router.post('/', async ctx => {
 })
 
 async function emailLogin(account, secret) {
-  const user = await User.verifyEmailPassword(account, secret)
-  // 生成 token
+	const user = await User.verifyEmailPassword(account, secret)
+	// 生成 token。 但是有个问题，如果通过登录方式来限制权限级别，vip 这种的该怎么做(普通用户升级成 vip 了)
+	// 要么就是更改权限的生成，要么 vip 体系通过另一套方案验证。
 	const token = generateToken(user.id, Auth.USER)
-  return token
-  // 权限是一个复杂的东西
-  // 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
+	return token
+	// 权限是一个复杂的东西
+	// 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
 }
 
 module.exports = router

@@ -2,6 +2,10 @@ const { Rule, LinValidator } = require('../../core/lin-validator-v2')
 const { User } = require('../models/user')
 const { LoginType } = require('../lib/enum')
 /**
+ * 前端传递参数验证集合，用于验证参数传递的格式校验
+ */
+
+/**
  * 正整数验证器
  * 用于抛出参数异常
  */
