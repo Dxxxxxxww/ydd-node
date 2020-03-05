@@ -18,6 +18,11 @@ const router = new Router({
 router.post('/', async ctx => {
 	//编写接口的第一步是编写校验器
 	const v = await new TokenValidator().validate(ctx)
+	// 1 在接口中编写业务逻辑 (不好)
+	// 2 在 Model 里
+	// MVC 写在 Model 里
+	// 业务分层，对于小型项目可以写在 Model 里就行了。
+	// 对于大型项目,可以在 Model 的基础上再分一层 Service，甚至还可以分层(视业务复杂度)
 	let token
 	switch (v.get('body.type')) {
 		case LoginType.USER_EMAIL:
@@ -43,6 +48,10 @@ async function emailLogin(account, secret) {
 	return token
 	// 权限是一个复杂的东西
 	// 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
+}
+
+async function miniProgramLogin(account, code) {
+  
 }
 
 module.exports = router

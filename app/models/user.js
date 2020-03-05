@@ -7,6 +7,18 @@ const { Sequelize, Model } = require('sequelize')
  * user 数据表
  */
 class User extends Model {
+  /**
+	 * @description 验证 email 是否已经存在
+	 * @param {*} email 输入的 email
+	 */
+	static async isHaveEmail(email) {
+		const user = await User.findOne({
+			where: { email }
+		})
+		if (user) {
+			throw new Error('email已存在')
+		}
+  }
 	/**
 	 * @description 验证密码是否正确
 	 * @param {*} email 输入的 email
@@ -28,18 +40,10 @@ class User extends Model {
 		}
 		return user
 	}
-	/**
-	 * @description 验证 email 是否已经存在
-	 * @param {*} email 输入的 email
-	 */
-	static async isHaveEmail(email) {
-		const user = await User.findOne({
-			where: { email }
-		})
-		if (user) {
-			throw new Error('email已存在')
-		}
-	}
+  
+  static async verifyMiniProgramAcct(account, code) {
+
+  }
 }
 
 User.init(
