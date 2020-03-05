@@ -41,7 +41,7 @@ async function emailLogin(account, secret) {
 	const token = generateToken(user.id, Auth.USER)
   return token
   // 权限是一个复杂的东西
-  // 我们需要通过权限来限制 
+  // 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
 }
 
 module.exports = router

@@ -32,9 +32,11 @@ class Auth {
 				throw new global.errs.Forbidden(errMsg)
       }
       
-      if (decode.level < this.level) {
-        throw new global.errs.Forbidden('权限不足')
+      if (decode.scope < this.level) {
+        errMsg = '权限不足'
+				throw new global.errs.Forbidden(errMsg)
       }
+      
 
 			ctx.auth = {
 				uid: decode.uid,
