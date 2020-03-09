@@ -7,7 +7,7 @@ const { Sequelize, Model } = require('sequelize')
  * user 数据表
  */
 class User extends Model {
-  /**
+	/**
 	 * @description 验证 email 是否已经存在
 	 * @param {*} email 输入的 email
 	 */
@@ -18,7 +18,7 @@ class User extends Model {
 		if (user) {
 			throw new Error('email已存在')
 		}
-  }
+	}
 	/**
 	 * @description 验证密码是否正确
 	 * @param {*} email 输入的 email
@@ -40,9 +40,23 @@ class User extends Model {
 		}
 		return user
 	}
-  
-  static async verifyMiniProgramAcct(account, code) {
+	/**
+	 * @description 通过 openid 获取用户
+	 * @param {*} openid
+	 */
+	static async getUserByOpenid(openid) {
+    const user = await User.findOne({
+      where: {
+        openid
+      }
+    })
+    return user
+  }
 
+  static async registerByOpenid(openid) {
+    return await User.create({
+      openid
+    })
   }
 }
 

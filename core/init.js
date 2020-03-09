@@ -10,9 +10,9 @@ class InitManager {
 	 *  */
 	static initCore(app) {
 		InitManager.app = app
+		InitManager.loadConfig()
 		InitManager.initLoadRouters()
 		InitManager.loadHttpException()
-		InitManager.loadConfig()
 	}
 
 	/**

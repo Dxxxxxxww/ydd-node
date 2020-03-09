@@ -1,9 +1,11 @@
 const Router = require('koa-router')
+
 const { TokenValidator } = require('../../validators/validator')
 const { LoginType } = require('../../lib/enum')
 const { User } = require('../../models/user')
 const { generateToken } = require('../../../core/util')
 const { Auth } = require('../../../middlewares/auth')
+const { WXManager } = require('../services/wx')
 
 const router = new Router({
 	prefix: '/v1/token'
@@ -29,11 +31,11 @@ router.post('/', async ctx => {
 			token = await emailLogin(v.get('body.account'), v.get('body.secret'))
 			break
 		case LoginType.USER_MINI_PROGRAM:
+			token = await WXManager.codeToToken(v.get('body.account'))
 			break
 		default:
 			//最好在这里抛出一个异常
 			throw new global.errs.ParameterException('没有相应的处理函数')
-			break
 	}
 	ctx.body = {
 		token
@@ -50,8 +52,6 @@ async function emailLogin(account, secret) {
 	// 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
 }
 
-async function miniProgramLogin(account, code) {
-  
-}
+async function miniProgramLogin(account, code) {}
 
 module.exports = router

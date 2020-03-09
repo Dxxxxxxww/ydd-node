@@ -11,7 +11,6 @@ app.use(parser()) //调用后返回中间件
 app.use(catchError) //当有中间件出现异常时会被捕获
 InitManager.initCore(app)
 
-
 // router.get('/hello', (ctx, next) => {
 //   ctx.body = { key: 'world' }
 // })

@@ -19,7 +19,7 @@ const LoginType = {
 	ADMIN_EMAIL: 200,
 	isThisType
 }
-
+// 权限级别，用于判断用户是否有权限
 const AuthLevel = {
 	USER: 8,
 	USER_VIP: 9,

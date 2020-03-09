@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 class Auth {
 	constructor(level = 1) {
     this.level = level
+    // 用户身份权限
 		Auth.USER = 8
 		Auth.ADMIN = 16
 		Auth.SUPER_ADMIN = 32

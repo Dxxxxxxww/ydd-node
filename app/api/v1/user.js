@@ -1,5 +1,6 @@
 const Router = require('koa-router')
 // const bcrypt = require('bcryptjs')
+
 const { RegisterValidator } = require('../../validators/validator')
 const { User } = require('../../models/user')
 
