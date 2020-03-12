@@ -15,13 +15,14 @@ class WXManager {
 	static async codeToToken(code) {
 		const url = util.format(loginUrl, appId, appSecret, code)
 
-		const res = await axios.get(url)
+    const res = await axios.get(url)
 		if (res.status !== 200) {
 			throw new global.errs.AuthFailed('openId获取失败')
 		}
-		const errcode = res.data.errcode
-		if (errcode !== 0) {
-			throw new global.errs.AuthFailed(`openId获取失败:${errcode}`)
+    const errcode = res.data.errcode
+    const errmsg = res.data.errmsg
+		if (errcode) {
+			throw new global.errs.AuthFailed(`openId获取失败:${errmsg}`)
 		}
 		// 拿到 openid 之后，就需要在档案里建立 user 了。
 		// 但不推荐使用 openid 作为 uid
@@ -31,7 +32,7 @@ class WXManager {
 		// 小程序登录时，需要查询 openid 是否在数据库里已经存在
 		// 如果存在，则是 token 到期，重新发布 token 重新登录即可
 		// 如果不存在，就是第一次登录，需要写入数据库中
-		const user = await User.getUserByOpenid(res.data.openid)
+		let user = await User.getUserByOpenid(res.data.openid)
 		if (!user) {
 			user = await User.registerByOpenid(res.data.openid)
 		}

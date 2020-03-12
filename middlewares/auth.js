@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken')
  */
 class Auth {
 	constructor(level = 1) {
-    this.level = level
-    // 用户身份权限
+		this.level = level
+		// 用户身份权限
 		Auth.USER = 8
 		Auth.ADMIN = 16
 		Auth.SUPER_ADMIN = 32
@@ -31,13 +31,12 @@ class Auth {
 					errMsg = 'token已过期'
 				}
 				throw new global.errs.Forbidden(errMsg)
-      }
-      
-      if (decode.scope < this.level) {
-        errMsg = '权限不足'
+			}
+
+			if (decode.scope < this.level) {
+				errMsg = '权限不足'
 				throw new global.errs.Forbidden(errMsg)
-      }
-      
+			}
 
 			ctx.auth = {
 				uid: decode.uid,
@@ -52,6 +51,15 @@ class Auth {
 			//basicAuth 有一个加密和解密的过程，实际写的时候前端发起请求需要 base64 加密，服务端使用了 basic-auth 包进行解密
 		}
 	}
+	static verifyToken(token) {
+    try {
+			// jwt.verify() 用于验证 token
+      jwt.verify(token, global.config.security.secretKey)
+      return true
+		} catch (error) {
+			return false
+		}
+  }
 }
 
 module.exports = {

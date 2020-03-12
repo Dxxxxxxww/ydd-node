@@ -1,8 +1,8 @@
+const { Sequelize, Model } = require('sequelize')
 const bcrypt = require('bcryptjs')
 //如果导出是 { sequelize } 则导入想改名形式为 { sequelize: db } 适用于 npm 包导入想改名，原理：解构赋值
 //如果到出是{ db: sequelize }，则导入就为 db
 const { sequelize } = require('../../core/db')
-const { Sequelize, Model } = require('sequelize')
 /**
  * user 数据表
  */
@@ -109,3 +109,12 @@ User.init(
 )
 
 module.exports = { User }
+
+/* 设计数据表
+  实体表
+    由粗到细，先找大的主题，逐步细化主题，找到每个主题下的小主题(共同点，不同点)，最终确立模型
+    真实世界的实物的映射
+  业务表
+    难点：抽象，多变性(对于一个业务表存在多个，没有一个确定的唯一的方式)
+    好的业务表->查询简单 坏的业务表->查询困难    数据库性能问题
+*/

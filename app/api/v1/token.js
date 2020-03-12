@@ -1,6 +1,9 @@
 const Router = require('koa-router')
 
-const { TokenValidator } = require('../../validators/validator')
+const {
+	TokenValidator,
+	TokenNotEmptyValidator
+} = require('../../validators/validator')
 const { LoginType } = require('../../lib/enum')
 const { User } = require('../../models/user')
 const { generateToken } = require('../../../core/util')
@@ -42,6 +45,16 @@ router.post('/', async ctx => {
 	}
 })
 
+router.post('/verify', async ctx => {
+	// 还是那句话，写接口第一件事 是写验证器。
+  // 验证 token 是否为空
+  const v = await new TokenNotEmptyValidator().validate(ctx)
+  const result = Auth.verifyToken(v.get('body.token'))
+  ctx.body = {
+		result
+	}
+})
+
 async function emailLogin(account, secret) {
 	const user = await User.verifyEmailPassword(account, secret)
 	// 生成 token。 但是有个问题，如果通过登录方式来限制权限级别，vip 这种的该怎么做(普通用户升级成 vip 了)
@@ -51,7 +64,5 @@ async function emailLogin(account, secret) {
 	// 权限是一个复杂的东西
 	// 权限是分角色的 某一些 api 只有某一些角色可以访问。 普通用户 管理员
 }
-
-async function miniProgramLogin(account, code) {}
 
 module.exports = router

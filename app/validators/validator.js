@@ -52,9 +52,9 @@ class RegisterValidator extends LinValidator {
 	}
 
 	async validateEmail(val) {
-    const email = val.body.email
-    //查询数据的写在 model 里比较好
-    await User.isHaveEmail(email)
+		const email = val.body.email
+		//查询数据的写在 model 里比较好
+		await User.isHaveEmail(email)
 		// const user = await User.findOne({
 		// 	where: { email }
 		// })
@@ -76,7 +76,7 @@ class TokenValidator extends LinValidator {
 	constructor() {
 		super()
 		this.account = [
-			new Rule('isLength', '不符合账号长度规则', { min: 6, max: 18 })
+			new Rule('isLength', '不符合账号长度规则', { min: 6, max: 32 })
 		]
 		this.secret = [
 			// lin-validate 的值，不是 validate 的。
@@ -95,9 +95,19 @@ class TokenValidator extends LinValidator {
 		}
 	}
 }
+/**
+ * @description 验证token不为空的校验器
+ */
+class TokenNotEmptyValidator extends LinValidator {
+	constructor() {
+		super()
+		this.token = [new Rule('isLength', 'token不允许为空', { min: 1 })]
+	}
+}
 
 module.exports = {
 	PositiveIntegerValidator,
 	RegisterValidator,
-	TokenValidator
+	TokenValidator,
+	TokenNotEmptyValidator
 }
