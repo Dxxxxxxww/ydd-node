@@ -14,12 +14,12 @@ class HttpException extends Error {
  * @description 请求成功
  */
 class Success extends HttpException {
-  constructor(msg = '成功', errorCode = 0) {
-    super()
-    this.msg = msg
-    this.errorCode = errorCode
-    this.status = 201
-  }
+	constructor(msg = '成功', errorCode = 0) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 201
+	}
 }
 /**
  * @description 参数异常类，继承于通信异常类
@@ -36,32 +36,56 @@ class ParameterException extends HttpException {
  * @description 资源未找到异常
  */
 class NotFound extends HttpException {
-  constructor(msg = '资源未找到', errorCode = 10002) {
-    super()
-    this.msg = msg
-    this.errorCode = errorCode
-    this.status = 404
-  }
+	constructor(msg = '资源未找到', errorCode = 10002) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 404
+	}
 }
 /**
  * @description 密码不正确
  */
 class AuthFailed extends HttpException {
-  constructor(msg = '授权失败', errorCode = 10003) {
-    super()
-    this.msg = msg
-    this.errorCode = errorCode
-    this.status = 401
-  }
+	constructor(msg = '授权失败', errorCode = 10003) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 401
+	}
 }
-
+/**
+ * @description 禁止访问
+ */
 class Forbidden extends HttpException {
-  constructor(msg= '禁止访问', errorCode = 10004) {
-    super()
-    this.msg = msg
-    this.errorCode = errorCode
-    this.status= 403
-  }
+	constructor(msg = '禁止访问', errorCode = 10004) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 403
+	}
+}
+/**
+ * @description 点赞异常
+ */
+class LikeError extends HttpException {
+	constructor(msg = '你已经点赞过了', errorCode = 60001) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 400
+	}
+}
+/**
+ * @description 取消点赞异常
+ */
+class DisikeError extends HttpException {
+	constructor(msg = '你已经取消点赞', errorCode = 60002) {
+		super()
+		this.msg = msg
+		this.errorCode = errorCode
+		this.status = 400
+	}
 }
 
 module.exports = {
@@ -70,5 +94,7 @@ module.exports = {
 	ParameterException,
 	NotFound,
 	AuthFailed,
-	Forbidden
+	Forbidden,
+	LikeError,
+	DisikeError
 }

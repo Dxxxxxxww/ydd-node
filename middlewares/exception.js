@@ -6,6 +6,7 @@ const catchError = async (ctx, next) => {
 	} catch (error) {
     const isDev = global.config.environment === 'dev'
     const isHttpException = error instanceof HttpException
+    // 如果是开发环境，并且不是 HttpException。为了在开发时能看见具体异常能即使修正，所以要抛出来
     if (isDev && !isHttpException) {
 			throw error
 		}

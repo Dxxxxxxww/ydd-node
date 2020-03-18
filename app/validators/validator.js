@@ -1,6 +1,6 @@
 const { Rule, LinValidator } = require('../../core/lin-validator-v2')
 const { User } = require('../models/user')
-const { LoginType } = require('../lib/enum')
+const { LoginType, ArtType } = require('../lib/enum')
 /**
  * 前端传递参数验证集合，用于验证参数传递的格式校验
  */
@@ -85,14 +85,16 @@ class TokenValidator extends LinValidator {
 			new Rule('isLength', '至少6个字符', { min: 6, max: 32 })
 		]
 	}
-	//使用自定义函数校验 type 因为 type 是不同的，需要不同校验
+	//使用自定义函数校验 type 因为 登录type 是不同的，需要不同校验
 	validateLoginType(val) {
-		if (!val.body.type) {
-			throw new Error('type是必传参数')
-		}
-		if (!LoginType.isThisType(val.body.type)) {
-			throw new Error('type参数不合法')
-		}
+		checkType(val, LoginType)
+		// 抽离出来作为公共函数
+		// if (!val.body.type) {
+		// 	throw new Error('type是必传参数')
+		// }
+		// if (!LoginType.isThisType(val.body.type)) {
+		// 	throw new Error('type参数不合法')
+		// }
 	}
 }
 /**
@@ -104,10 +106,33 @@ class TokenNotEmptyValidator extends LinValidator {
 		this.token = [new Rule('isLength', 'token不允许为空', { min: 1 })]
 	}
 }
+/**
+ * @description 验证喜欢的 id 和 类型
+ * 这里不需要校验 uid 因为可以从 token 中获取 uid
+ * 如果从前端传，拿到 uid 具有较大的风险，用户可以修改(伪造) uid 去获取其他用户的信息
+ */
+class LikeValidator extends PositiveIntegerValidator {
+	constructor() {
+		super()
+	}
+	validateLoginType(val) {
+		checkType(val, ArtType)
+	}
+}
+
+function checkType(val, typ) {
+	if (!val.body.type) {
+		throw new Error('type是必传参数')
+	}
+	if (!typ.isThisType(val.body.type)) {
+		throw new Error('type参数不合法')
+	}
+}
 
 module.exports = {
 	PositiveIntegerValidator,
 	RegisterValidator,
 	TokenValidator,
-	TokenNotEmptyValidator
+	TokenNotEmptyValidator,
+	LikeValidator
 }

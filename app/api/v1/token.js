@@ -47,11 +47,11 @@ router.post('/', async ctx => {
 
 router.post('/verify', async ctx => {
 	// 还是那句话，写接口第一件事 是写验证器。
-  // 验证 token 是否为空
-  const v = await new TokenNotEmptyValidator().validate(ctx)
-  const result = Auth.verifyToken(v.get('body.token'))
-  ctx.body = {
-		result
+	// 验证 token 是否为空
+	const v = await new TokenNotEmptyValidator().validate(ctx)
+	const result = Auth.verifyToken(v.get('body.token'))
+	ctx.body = {
+		is_valid: result
 	}
 })
 

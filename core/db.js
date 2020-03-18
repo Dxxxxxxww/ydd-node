@@ -1,7 +1,6 @@
 //配合数据库驱动(mysql2)，用于在 js 中编写数据库,数据库的配置
 const Sequelize = require('sequelize')
 const { dbName, host, port, user, password } = require('../config/config').database
-console.log(dbName, host, port, user, password)
 const sequelize = new Sequelize(dbName, user, password, {
 	dialect: 'mysql',
 	host,

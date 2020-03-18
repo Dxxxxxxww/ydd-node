@@ -1,5 +1,6 @@
 const { Movie, Sentence, Music } = require('./classic')
-
+// 如果写在 classic model 中，就会是给每一个表都写一个查询的静态类方法。
+// 这样做太过重复了，所以可以抽离出来写一个类方法去查询
 class Art {
 	static async getData(artId, type) {
 		const finder = {

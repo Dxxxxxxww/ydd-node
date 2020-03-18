@@ -34,6 +34,7 @@ class User extends Model {
 		if (!user) {
 			throw new global.errs.NotFound('账号不存在')
 		}
+		// 使用 bcrypt.compareSync 来对比输入的密码与数据库的密码是否一致
 		const correct = bcrypt.compareSync(plainPassword, user.password)
 		if (!correct) {
 			throw new global.errs.AuthFailed('密码不正确')
@@ -45,19 +46,19 @@ class User extends Model {
 	 * @param {*} openid
 	 */
 	static async getUserByOpenid(openid) {
-    const user = await User.findOne({
-      where: {
-        openid
-      }
-    })
-    return user
-  }
+		const user = await User.findOne({
+			where: {
+				openid
+			}
+		})
+		return user
+	}
 
-  static async registerByOpenid(openid) {
-    return await User.create({
-      openid
-    })
-  }
+	static async registerByOpenid(openid) {
+		return await User.create({
+			openid
+		})
+	}
 }
 
 User.init(
