@@ -5,6 +5,7 @@ const { AuthLevel } = require('../../lib/enum')
 const { Flow } = require('@models/flow')
 const { Art } = require('@models/art')
 const { Favor } = require('@models/favor')
+const { PositiveIntegerValidator } = require('../../validators/validator')
 
 const router = new Router({
 	prefix: '/v1/classic'
@@ -27,13 +28,13 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// ctx.body = html
 	// ctx.body = {
 	// 	key: 'classic'
-  // }
+	// }
 
-  // 可以在 attributes 属性，数组值，attributes: ['a','b'] 来查找想要的指定字段
-  // 也可以通过 attributes: {exclude:['a','b']} 来排除指定字段
-  // 但是这样每一个查询都要添加，太麻烦
-  // 所以使用 sequelize 的 scope 直接在模型上定义，排除指定字段 (scope 可以理解为预先定义好的sql)
-  // 但是这样每一个模型也都需要配置 scope。所以使用全局定义 scope。(在 sequelize 实例上定义)
+	// 可以在 attributes 属性，数组值，attributes: ['a','b'] 来查找想要的指定字段
+	// 也可以通过 attributes: {exclude:['a','b']} 来排除指定字段
+	// 但是这样每一个查询都要添加，太麻烦
+	// 所以使用 sequelize 的 scope 直接在模型上定义，排除指定字段 (scope 可以理解为预先定义好的sql)
+	// 但是这样每一个模型也都需要配置 scope。所以使用全局定义 scope。(在 sequelize 实例上定义)
 	const flow = await Flow.findOne({
 		order: [['index', 'DESC']]
 	})
@@ -47,8 +48,50 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// 可以使用 sequelize 的方法 setDataValue
 	// art.dataValues.index = flow.index
 	art.setDataValue('index', flow.index)
-  const likeStatus = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
-	art.setDataValue('likeStatus', likeStatus)
+	const likeLatest = await Favor.userLikeIt(
+		flow.art_id,
+		flow.type,
+		ctx.auth.uid
+	)
+	art.setDataValue('likeStatus', likeLatest)
+	ctx.body = art
+})
+
+router.get('/:index/next', new Auth(AuthLevel.USER).m, async ctx => {
+	const v = await new PositiveIntegerValidator().validate(ctx, {
+		id: 'index'
+	})
+	const index = v.get('path.index')
+	// 查询最好放在 model 中，这句足够简单就懒得拿出去了。但是如果逻辑复杂就一定要抽离出去
+	const flow = await Flow.findOne({
+		where: { index: index + 1 }
+	})
+	if (!flow) {
+		throw new global.errs.NotFound()
+	}
+	const art = await Art.getData(flow.art_id, flow.type)
+	art.setDataValue('index', flow.index)
+	const likeNext = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
+	art.setDataValue('likeStatus', likeNext)
+	ctx.body = art
+})
+
+router.get('/:index/previous', new Auth(AuthLevel.USER).m, async ctx => {
+	const v = await new PositiveIntegerValidator().validate(ctx, {
+		id: 'index'
+	})
+	const index = v.get('path.index')
+	// 查询最好放在 model 中，这句足够简单就懒得拿出去了。但是如果逻辑复杂就一定要抽离出去
+	const flow = await Flow.findOne({
+		where: { index: index - 1 }
+	})
+	if (!flow) {
+		throw new global.errs.NotFound()
+	}
+	const art = await Art.getData(flow.art_id, flow.type)
+	art.setDataValue('index', flow.index)
+	const likePrevious = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
+	art.setDataValue('likeStatus', likePrevious)
 	ctx.body = art
 })
 
