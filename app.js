@@ -1,3 +1,5 @@
+require('module-alias/register')
+
 const Koa = require('koa')
 //一个返回中间件的函数 用于获取请求的 body 里的参数
 const parser = require('koa-bodyparser')

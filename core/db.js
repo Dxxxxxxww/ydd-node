@@ -8,13 +8,28 @@ const sequelize = new Sequelize(dbName, user, password, {
 	loading: true,
 	timezone: '+08:00',
 	define: {
-    timestamps: true,//生成 创建时间，更新时间字段，默认为 true
-    paranoid: true,//生成 删除时间字段，默认为 false
-    // createAt: 'create_at',
-    // updateAt: 'update_at',
-    // deleteAt: 'delete_at',
-    underscored: true,//将驼峰转为下划线连接
-  }
+		timestamps: true, //生成 创建时间，更新时间字段，默认为 true
+		paranoid: true, //生成 删除时间字段，默认为 false
+		createAt: 'create_at',
+		updateAt: 'update_at',
+		deleteAt: 'delete_at',
+		underscored: true, //将驼峰转为下划线连接
+		freezeTableName: true,
+		scopes: {
+			bh: {
+				attributes: {
+					exclude: [
+						'created_at',
+						'updated_at',
+						'deleted_at',
+						'createdAt',
+						'updatedAt',
+						'deletedAt'
+					]
+				}
+			}
+		}
+	}
 })
 //这句调用必须有
 sequelize.sync() //sequelize.sync({force:true}),严重不推荐，当想添加字段的时候，实质是删除旧表添加新表(新表中包含想要新增字段)

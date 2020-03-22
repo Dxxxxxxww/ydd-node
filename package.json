@@ -34,5 +34,9 @@
     "validator": "^10.11.0",
     "sequelize": "^5.6.1"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "_moduleAliases": {
+    "@root": ".",
+    "@models": "app/models"
+  }
 }

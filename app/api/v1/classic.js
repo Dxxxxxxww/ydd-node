@@ -2,8 +2,9 @@ const Router = require('koa-router')
 
 const { Auth } = require('../../../middlewares/auth')
 const { AuthLevel } = require('../../lib/enum')
-const { Flow } = require('../../models/flow')
-const { Art } = require('../../models/art')
+const { Flow } = require('@models/flow')
+const { Art } = require('@models/art')
+const { Favor } = require('@models/favor')
 
 const router = new Router({
 	prefix: '/v1/classic'
@@ -26,7 +27,13 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// ctx.body = html
 	// ctx.body = {
 	// 	key: 'classic'
-	// }
+  // }
+
+  // 可以在 attributes 属性，数组值，attributes: ['a','b'] 来查找想要的指定字段
+  // 也可以通过 attributes: {exclude:['a','b']} 来排除指定字段
+  // 但是这样每一个查询都要添加，太麻烦
+  // 所以使用 sequelize 的 scope 直接在模型上定义，排除指定字段 (scope 可以理解为预先定义好的sql)
+  // 但是这样每一个模型也都需要配置 scope。所以使用全局定义 scope。(在 sequelize 实例上定义)
 	const flow = await Flow.findOne({
 		order: [['index', 'DESC']]
 	})
@@ -40,6 +47,8 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// 可以使用 sequelize 的方法 setDataValue
 	// art.dataValues.index = flow.index
 	art.setDataValue('index', flow.index)
+  const likeStatus = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
+	art.setDataValue('likeStatus', likeStatus)
 	ctx.body = art
 })
 
