@@ -38,7 +38,6 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	const flow = await Flow.findOne({
 		order: [['index', 'DESC']]
 	})
-	const art = await Art.getData(flow.art_id, flow.type)
 	// 直接这样定义一个 index 属性是没有用的
 	// 这里涉及到序列化的问题
 	// 序列化是指把某一种语言的相关对象转换成 json
@@ -46,14 +45,14 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// 这里只有 dataValues 里的字段会作为 json 返回回去
 	// 这样写其实不太好，因为如果不看 art 数据结构源码是不知道要这样写的，这样写可以成功是因为 js 是一门动态语音
 	// 可以使用 sequelize 的方法 setDataValue
-	// art.dataValues.index = flow.index
-	art.setDataValue('index', flow.index)
-	const likeLatest = await Favor.userLikeIt(
+  // art.dataValues.index = flow.index
+  
+	const art = await _mixArtData(
 		flow.art_id,
 		flow.type,
-		ctx.auth.uid
+		ctx.auth.uid,
+		flow.index
 	)
-	art.setDataValue('likeStatus', likeLatest)
 	ctx.body = art
 })
 
@@ -69,10 +68,7 @@ router.get('/:index/next', new Auth(AuthLevel.USER).m, async ctx => {
 	if (!flow) {
 		throw new global.errs.NotFound()
 	}
-	const art = await Art.getData(flow.art_id, flow.type)
-	art.setDataValue('index', flow.index)
-	const likeNext = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
-	art.setDataValue('likeStatus', likeNext)
+	const art = await _mixArtData(flow.art_id, flow.type, ctx.auth.uid, flow.index)
 	ctx.body = art
 })
 
@@ -87,12 +83,17 @@ router.get('/:index/previous', new Auth(AuthLevel.USER).m, async ctx => {
 	})
 	if (!flow) {
 		throw new global.errs.NotFound()
-	}
-	const art = await Art.getData(flow.art_id, flow.type)
-	art.setDataValue('index', flow.index)
-	const likePrevious = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid)
-	art.setDataValue('likeStatus', likePrevious)
+  }
+	const art = await _mixArtData(flow.art_id, flow.type, ctx.auth.uid, flow.index)
 	ctx.body = art
 })
+
+async function _mixArtData(artId, type, uid, index) {
+	const art = await Art.getData(artId, type)
+	art.setDataValue('index', index)
+	const likeStatus = await Favor.userLikeIt(artId, type, uid)
+	art.setDataValue('likeStatus', likeStatus)
+	return art
+}
 
 module.exports = { router }
