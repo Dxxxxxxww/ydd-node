@@ -5,7 +5,10 @@ const { AuthLevel } = require('../../lib/enum')
 const { Flow } = require('@models/flow')
 const { Art } = require('@models/art')
 const { Favor } = require('@models/favor')
-const { PositiveIntegerValidator } = require('../../validators/validator')
+const {
+	PositiveIntegerValidator,
+	ClassicValidator
+} = require('../../validators/validator')
 
 const router = new Router({
 	prefix: '/v1/classic'
@@ -45,8 +48,8 @@ router.get('/latest', new Auth(AuthLevel.USER).m, async (ctx, next) => {
 	// 这里只有 dataValues 里的字段会作为 json 返回回去
 	// 这样写其实不太好，因为如果不看 art 数据结构源码是不知道要这样写的，这样写可以成功是因为 js 是一门动态语音
 	// 可以使用 sequelize 的方法 setDataValue
-  // art.dataValues.index = flow.index
-  
+	// art.dataValues.index = flow.index
+
 	const art = await _mixArtData(
 		flow.art_id,
 		flow.type,
@@ -68,7 +71,12 @@ router.get('/:index/next', new Auth(AuthLevel.USER).m, async ctx => {
 	if (!flow) {
 		throw new global.errs.NotFound()
 	}
-	const art = await _mixArtData(flow.art_id, flow.type, ctx.auth.uid, flow.index)
+	const art = await _mixArtData(
+		flow.art_id,
+		flow.type,
+		ctx.auth.uid,
+		flow.index
+	)
 	ctx.body = art
 })
 
@@ -83,9 +91,29 @@ router.get('/:index/previous', new Auth(AuthLevel.USER).m, async ctx => {
 	})
 	if (!flow) {
 		throw new global.errs.NotFound()
-  }
-	const art = await _mixArtData(flow.art_id, flow.type, ctx.auth.uid, flow.index)
+	}
+	const art = await _mixArtData(
+		flow.art_id,
+		flow.type,
+		ctx.auth.uid,
+		flow.index
+	)
 	ctx.body = art
+})
+
+router.get('/:type/:id/favor', new Auth(AuthLevel.USER).m, async ctx => {
+  const v = await new ClassicValidator().validate(ctx)
+  const id = v.get('path.id')
+  const type = parseInt(v.get('path.type'))
+  const art = await Art.getData(id, type)
+  if (!art) {
+    throw new global.errs.NotFound
+  }
+  const like = await Favor.userLikeIt(id, type, ctx.auth.uid)
+  ctx.body = {
+		favNums: art.fav_nums,
+		likeStatus: like
+	}
 })
 
 async function _mixArtData(artId, type, uid, index) {

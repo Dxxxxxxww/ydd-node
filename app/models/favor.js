@@ -69,7 +69,12 @@ class Favor extends Model {
 			})
 		})
 	}
-
+  /**
+   * 
+   * @param {*} art_id art id
+   * @param {*} type art 类型
+   * @param {*} uid user id
+   */
 	static async userLikeIt(art_id, type, uid) {
 		const favor = await Favor.findOne({
 			where: {

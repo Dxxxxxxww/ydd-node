@@ -115,16 +115,26 @@ class LikeValidator extends PositiveIntegerValidator {
 	constructor() {
 		super()
 	}
-	validateLoginType(val) {
+	validateArtType(val) {
 		checkType(val, ArtType)
 	}
 }
+/**
+ * @description 获取某一期刊的详细信息的校验器
+ */
+class ClassicValidator extends LikeValidator {
+	validateArtType(val) {
+		checkType(val, ArtType, 'path')
+	}
+}
 
-function checkType(val, typ) {
-	if (!val.body.type) {
+function checkType(val, typ, position = 'body') {
+	const type = val[position].type
+	if (!type) {
 		throw new Error('type是必传参数')
 	}
-	if (!typ.isThisType(val.body.type)) {
+	const intType = parseInt(type)
+	if (!typ.isThisType(intType)) {
 		throw new Error('type参数不合法')
 	}
 }
@@ -134,5 +144,6 @@ module.exports = {
 	RegisterValidator,
 	TokenValidator,
 	TokenNotEmptyValidator,
-	LikeValidator
+	LikeValidator,
+	ClassicValidator
 }
