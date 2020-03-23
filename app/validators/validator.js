@@ -126,8 +126,13 @@ class ClassicValidator extends LikeValidator {
 	validateArtType(val) {
 		checkType(val, ArtType, 'path')
 	}
+	// const checker = new Checker(ArtType)
+  // 使用 bind 改变 函数内 this 的指向。因为将函数赋给 this.validateArtType 后，函数的调用者是 lin-validator
+  // 会报 this 指向错误
+	// this.validateArtType = checker.check.bind(checker)
 }
 
+// 我采用的是传参的形式，还可以直接再写一个 checkType 函数，两个 checkType 一个是针对 login 的，另一个针对 Art 的。
 function checkType(val, typ, position = 'body') {
 	const type = val[position].type
 	if (!type) {
@@ -138,6 +143,29 @@ function checkType(val, typ, position = 'body') {
 		throw new Error('type参数不合法')
 	}
 }
+
+// 老师使用 class 方法，虽然他自己也认为针对这个问题这样写太麻烦了，他推荐用另写一个 checkType 函数
+// 不过用类解决函数所局限的问题是一个很好的方向，在其他复杂业务中可以考虑使用类来解决
+// 为什么用函数不能解决而类可以
+// 因为函数不能保持变量(虽然js可以这么写但是不推荐)，函数被设计出来就是过程式的，是为了去干什么事，解决什么问题的
+// 它本身不能保存状态。但是类可以
+
+// class Checker {
+// 	constructor(type) {
+// 		this.enumType = type
+// 	}
+
+// 	check(vals) {
+// 		let type = vals.body.type || vals.path.type
+// 		if (!type) {
+// 			throw new Error('type是必传参数')
+// 		}
+// 		type = parseInt(type)
+// 		if (!this.enumType.isThisType(type)) {
+// 			throw new Error('type参数不合法')
+// 		}
+// 	}
+// }
 
 module.exports = {
 	PositiveIntegerValidator,
