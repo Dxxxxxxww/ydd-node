@@ -101,6 +101,9 @@ router.get('/:index/previous', new Auth(AuthLevel.USER).m, async ctx => {
 	ctx.body = art
 })
 
+/**
+ * @description 获取期刊点赞信息
+ */
 router.get('/:type/:id/favor', new Auth(AuthLevel.USER).m, async ctx => {
   const v = await new ClassicValidator().validate(ctx)
   const id = v.get('path.id')
@@ -114,6 +117,14 @@ router.get('/:type/:id/favor', new Auth(AuthLevel.USER).m, async ctx => {
 		favNums: art.fav_nums,
 		likeStatus: like
 	}
+})
+
+/**
+ * @description 获取用户喜欢的所有期刊
+ */
+router.get('/favor', new Auth(AuthLevel.USER).m, async ctx => {
+  const arts = await Favor.getAllFavor(ctx.auth.uid)
+  ctx.body = arts
 })
 
 async function _mixArtData(artId, type, uid, index) {
