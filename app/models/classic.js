@@ -2,42 +2,45 @@ const { Sequelize, Model } = require('sequelize')
 const { sequelize } = require('../../core/db')
 
 const classicFields = {
-	image: Sequelize.STRING,
-	content: Sequelize.STRING,
-	pubdate: Sequelize.STRING,
-	fav_nums: Sequelize.STRING,
-	type: Sequelize.STRING
+  image: Sequelize.STRING,
+  content: Sequelize.STRING,
+  pubdate: Sequelize.STRING,
+  fav_nums: {
+    type: Sequelize.INTEGER,
+    default: 0
+  },
+  type: Sequelize.STRING
 }
 /**
  * @description Movie 数据表
  */
 class Movie extends Model {}
 Movie.init(classicFields, {
-	sequelize,
-	tableName: 'movie'
+  sequelize,
+  tableName: 'movie'
 })
 /**
  * @description Sentence 数据表
  */
 class Sentence extends Model {}
 Sentence.init(classicFields, {
-	sequelize,
-	tableName: 'sentence'
+  sequelize,
+  tableName: 'sentence'
 })
 /**
  * @description Music 数据表
  */
 class Music extends Model {}
 Music.init(
-	{ ...classicFields, url: Sequelize.STRING },
-	{
-		sequelize,
-		tableName: 'music'
-	}
+  { ...classicFields, url: Sequelize.STRING },
+  {
+    sequelize,
+    tableName: 'music'
+  }
 )
 
 module.exports = {
-	Movie,
-	Sentence,
-	Music
+  Movie,
+  Sentence,
+  Music
 }
