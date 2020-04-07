@@ -16,8 +16,8 @@ class Favor extends Model {
       where: {
         art_id,
         type,
-        uid
-      }
+        uid,
+      },
     })
 
     if (favor) {
@@ -25,7 +25,7 @@ class Favor extends Model {
     }
     // 执行事务 sequelize.transaction 这个函数一定要 return
     // 事务如果执行失败就会 roll back
-    return sequelize.transaction(async t => {
+    return sequelize.transaction(async (t) => {
       await Favor.create({ art_id, type, uid }, { transaction: t })
       // 将实体表中对应数据的 fav_nums 加 1
       // 增加这个是因为 sequelize 的 bug，在使用添加了 scope 的查询后如果对数据进行改动就会生成错误的 sql,
@@ -35,7 +35,7 @@ class Favor extends Model {
       // Model 实例的一个方法，指定一个字段自增
       await art.increment('fav_nums', {
         by: 1,
-        transaction: t
+        transaction: t,
       })
     })
   }
@@ -44,21 +44,21 @@ class Favor extends Model {
       where: {
         art_id,
         type,
-        uid
-      }
+        uid,
+      },
     })
 
     if (!favor) {
       throw new global.errs.DislikeError()
     }
     // 执行事务
-    return sequelize.transaction(async t => {
+    return sequelize.transaction(async (t) => {
       // 注意这里需要用 favor 实例，而不是类。因为如果要销毁数据，那么数据实例就一定存在。
       // force 值为 false： 软删除，即给数据添加删除日期值。
       //            true： 物理删除，删除了这条数据。
       await favor.destroy({
         force: false,
-        transaction: t
+        transaction: t,
       })
       // 将实体表中对应数据的 fav_nums 减 1
       // 增加这个是因为 sequelize 的 bug，在使用添加了 scope 的查询后如果对数据进行改动就会生成错误的 sql,
@@ -67,7 +67,7 @@ class Favor extends Model {
       // Model 实例的一个方法，指定一个字段自减
       await art.decrement('fav_nums', {
         by: 1,
-        transaction: t
+        transaction: t,
       })
     })
   }
@@ -81,8 +81,8 @@ class Favor extends Model {
       where: {
         art_id,
         type,
-        uid
-      }
+        uid,
+      },
     })
     return favor ? true : false
   }
@@ -90,14 +90,14 @@ class Favor extends Model {
    * @description 获取用户喜欢的所有期刊
    * @param {*} uid
    */
-  static async getAllFavor(uid) {
+  static async getMyClassicFavors(uid) {
     const arts = await Favor.findAll({
       where: {
         uid,
         type: {
-          [Op.not]: 400
-        }
-      }
+          [Op.not]: 400,
+        },
+      },
     })
     if (!arts) {
       throw new global.errs.NotFound()
@@ -107,20 +107,44 @@ class Favor extends Model {
     // 使用 in 来代替
     return await Art.getList(arts)
   }
+  /**
+   * @description 获取书籍的点赞情况以及当前用户的点赞状态
+   * @param {*} uid
+   * @param {*} id
+   */
+  static async getBookFavor(uid, bookId) {
+    const favorNums = await Favor.count({
+      where: {
+        art_id: bookId,
+        type: 400,
+      },
+    })
+    const myFavor = await Favor.findOne({
+      where: {
+        art_id: bookId,
+        uid,
+        type: 400,
+      },
+    })
+    return {
+      favorNums,
+      likeStatus: myFavor ? 1 : 0,
+    }
+  }
 }
 // 不需要用字段来表示是否喜欢，只要 favor 表里有数据，就代表喜欢
 Favor.init(
   {
     uid: Sequelize.INTEGER,
     art_id: Sequelize.INTEGER,
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
   },
   {
     sequelize,
-    tableName: 'favor'
+    tableName: 'favor',
   }
 )
 
 module.exports = {
-  Favor
+  Favor,
 }
