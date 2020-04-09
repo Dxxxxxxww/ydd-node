@@ -23,7 +23,7 @@ router.post('/register', async (ctx, next) => {
 		password: v.get('body.password2'),
 		email: v.get('body.email')
 	}
-	const r = await User.create(user)
+	await User.create(user)
 	throw new global.errs.Success()
 })
 

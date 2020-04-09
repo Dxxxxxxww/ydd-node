@@ -26,19 +26,19 @@ class RegisterValidator extends LinValidator {
     this.nickname = [
       new Rule('isLength', ' 昵称至少2个字符，最多8个字符', {
         min: 2,
-        max: 8
-      })
+        max: 8,
+      }),
     ]
     this.password1 = [
       new Rule('isLength', ' 密码至少6个字符，最多16个字符', {
         min: 6,
-        max: 16
+        max: 16,
       }),
       new Rule(
         'matches',
         ' 密码不符合规范',
         '^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]'
-      )
+      ),
     ]
     this.password2 = this.password1
   }
@@ -76,13 +76,13 @@ class TokenValidator extends LinValidator {
   constructor() {
     super()
     this.account = [
-      new Rule('isLength', '不符合账号长度规则', { min: 6, max: 32 })
+      new Rule('isLength', '不符合账号长度规则', { min: 6, max: 32 }),
     ]
     this.secret = [
       // lin-validate 的值，不是 validate 的。
       // 当字段被标记为 isOptional ，如果不传，则不校验，如果传值，就会根据后面的校验规则进行校验。
       new Rule('isOptional'),
-      new Rule('isLength', '至少6个字符', { min: 6, max: 32 })
+      new Rule('isLength', '至少6个字符', { min: 6, max: 32 }),
     ]
   }
   //使用自定义函数校验 type 因为 登录type 是不同的，需要不同校验
@@ -138,11 +138,25 @@ class SearchValidator extends LinValidator {
     this.start = [
       new Rule('isInt', 'start不符合规范', { min: 0, max: 60000 }),
       // lin-validate 的默认参数，如果前端不传 start 则默认为 0
-      new Rule('isOptional', '', 0)
+      new Rule('isOptional', '', 0),
     ]
     this.count = [
       new Rule('isInt', 'count不符合规范', { min: 1, max: 20 }),
-      new Rule('isOptional', '', 20)
+      new Rule('isOptional', '', 20),
+    ]
+  }
+}
+/**
+ * @description 短评长度限制
+ */
+class AddShortCommentValidator extends PositiveIntegerValidator {
+  constructor() {
+    super()
+    this.content = [
+      new Rule('isLength', '必须在1到12个字符之间', {
+        min: 1,
+        max: 12,
+      }),
     ]
   }
 }
@@ -189,5 +203,6 @@ module.exports = {
   TokenNotEmptyValidator,
   LikeValidator,
   ClassicValidator,
-  SearchValidator
+  SearchValidator,
+  AddShortCommentValidator,
 }

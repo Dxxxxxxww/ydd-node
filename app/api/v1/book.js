@@ -3,26 +3,28 @@ const Router = require('koa-router')
 const { HotBook } = require('@models/hot_book')
 const { Book } = require('@models/book')
 const { Favor } = require('@models/favor')
+const { BookComment } = require('@models/book-comment')
 const {
   PositiveIntegerValidator,
   SearchValidator,
+  AddShortCommentValidator,
 } = require('../../validators/validator')
 const { Auth } = require('../../../middlewares/auth')
 const { AuthLevel } = require('../../lib/enum')
 
 const router = new Router({ prefix: '/v1/book' })
-
+// 获取热门书籍列表
 router.get('/hot_list', async (ctx, next) => {
   const books = await HotBook.getAll()
   ctx.body = { books }
 })
-
+// 获取书籍详细信息
 router.get('/:id/detail', async (ctx) => {
   const v = await new PositiveIntegerValidator().validate(ctx)
   const book = new Book(v.get('path.id'))
   ctx.body = await book.getDetail()
 })
-
+// 搜索书籍
 router.get('/search', async (ctx) => {
   const v = await new SearchValidator().validate(ctx)
   const result = await Book.searchFromYuShu(
@@ -42,13 +44,48 @@ router.get('/favor/count', new Auth(AuthLevel.USER).m, async (ctx) => {
   }
 })
 // 获取书籍点赞情况
-router.get('/:book_id/favor', new Auth(AuthLevel.USER).m, async (ctx) => {
+router.get('/:bookId/favor', new Auth(AuthLevel.USER).m, async (ctx) => {
   // 使用 lin-validate 提供的别名
   const v = await new PositiveIntegerValidator().validate(ctx, {
-    id: 'book_id',
+    id: 'bookId',
   })
-  const favor = await Favor.getBookFavor(ctx.auth.uid, v.get('path.book_id'))
+  const favor = await Favor.getBookFavor(ctx.auth.uid, v.get('path.bookId'))
   ctx.body = favor
+})
+// 新增短评
+router.post('/add/short_comment', new Auth(AuthLevel.USER).m, async (ctx) => {
+  const v = await new AddShortCommentValidator().validate(ctx, {
+    id: 'bookId',
+  })
+  await BookComment.addComment(v.get('body.bookId'), v.get('body.content'))
+  throw new global.errs.Success()
+})
+// 获取短评
+router.get('/:bookId/shortComment', new Auth(AuthLevel.USER).m, async (ctx) => {
+  const v = await new PositiveIntegerValidator().validate(ctx, {
+    id: 'bookId',
+  })
+  // 这里通过 scope 的方式来在查询数据库的时候就不查这几个字段，也可以在 json 序列化的时候排除这几个字段
+  // const comments = await BookComment.getComments(v.get('path.bookId'))
+  // 由于 BookComment 定义了 toJSON 方法，这样查询到结果后，当 koa 隐式的进行 JSON 序列化的时候
+  // 就会找到 对象上的 toJSON 方法，会对 toJSON 方法返回值进行序列化
+  const comments = await BookComment.getComments(v.get('path.bookId'))
+  ctx.body = {
+    comments,
+  }
+})
+// 模拟实现热搜，因为热搜(推荐)需要深度学习的技术,不在web服务开发的范畴
+// 为何不能把用户的输入记下来，然后统计返回搜索次数最多的当做热搜？
+// 可以这么做，但是如果只用搜索次数最多的，那么热搜几乎永远不会变化。
+// 本身热搜搜索次数就多，那么人看到热搜又点进去搜索，那次数就更多了
+// 这样的结果就是热门的东西越热门。
+// 热搜算的应该是频率和趋势，而不是简单的累加
+// 而且热搜很多时候也不是真的热搜，而是一个营销工具
+// 热搜 = 需要算法参考 + 人工编辑
+router.get('hotKeyword', async (ctx) => {
+  ctx.body = {
+    hot: ['ECMAScript', 'TypeScript', 'Python', '哈利·波特', '韩寒', '金庸'],
+  }
 })
 
 router.post('/:id/latest', async (ctx, next) => {

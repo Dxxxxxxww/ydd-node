@@ -25,7 +25,7 @@ class Art {
     // artDetail.setDataValue('likeStatus', likeStatus)
     return {
       artDetail,
-      likeStatus
+      likeStatus,
     }
   }
   /**
@@ -36,7 +36,7 @@ class Art {
     const artObj = {
       100: [],
       200: [],
-      300: []
+      300: [],
     }
     for (const art of artList) {
       // 这里不用 if 和 switch，因为已知 art 类型，就可以直接定义对象来获取id
@@ -65,10 +65,11 @@ class Art {
   static async getData(artId, type, useScope = true) {
     const finder = {
       where: {
-        id: artId
-      }
+        id: artId,
+      },
     }
     let art = null
+    // 这里通过 scope 的方式来在查询数据库的时候就不查这几个字段，也可以在 json 序列化的时候排除这几个字段
     // 增加这个是因为 sequelize 的 bug，在使用添加了 scope 的查询后如果对数据进行改动就会生成错误的sql,
     // 所以使用第三个参数来判断是否使用 scope
     const scope = useScope ? 'bh' : null
@@ -99,9 +100,9 @@ class Art {
     const finder = {
       where: {
         id: {
-          [Op.in]: ids
-        }
-      }
+          [Op.in]: ids,
+        },
+      },
     }
     let arts = []
     const scope = 'bh'
@@ -123,5 +124,5 @@ class Art {
 }
 
 module.exports = {
-  Art
+  Art,
 }

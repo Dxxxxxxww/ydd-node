@@ -7,7 +7,7 @@ const classicFields = {
   pubdate: Sequelize.STRING,
   fav_nums: {
     type: Sequelize.INTEGER,
-    default: 0
+    defaultValue: 0
   },
   type: Sequelize.STRING
 }
