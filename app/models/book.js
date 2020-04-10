@@ -6,12 +6,14 @@ const { Favor } = require('./favor')
 
 // 存储 book 的相关业务数据，因为书籍的详细信息都可以在服务里获取，这里只需要保存 fav_nums 这个业务数据
 class Book extends Model {
-  constructor(id) {
+  // 如果设置了构造函数，那么返回的实例里只会包含 定义了 defaultValue 的字段
+  // 所以这里还是不要用构造函数传参了，
+  constructor() {
     super()
-    this.id = id
   }
-  async getDetail() {
-    const url = util.format(global.config.yushu.detailUrl, this.id)
+  // 方法还是可以用实例方法(个人感觉没必要了，还不如直接改成类方法),在方法上传递参数
+  async getDetail(id) {
+    const url = util.format(global.config.yushu.detailUrl, id)
     const detail = await axios.get(url)
     return detail.data
   }

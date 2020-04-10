@@ -77,6 +77,9 @@ router.get('/:index/next', new Auth(AuthLevel.USER).m, async (ctx) => {
     ctx.auth.uid,
     flow.index
   )
+  // 如果不使用 scope ，可以通过在 Model 基类上定义的 toJSON 方法来定义一个 exclude 属性数组，排除不想要的字段
+  // 如果实例本身就是一个集合，处理方式参见 book-comment.js 直接将此属性定义在原型上
+  // art.exclude = ['index', 'likeStatus']
   ctx.body = art
 })
 
