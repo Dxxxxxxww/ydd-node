@@ -16,7 +16,7 @@ const router = new Router({ prefix: '/v1/book' })
 // 获取热门书籍列表
 router.get('/hot_list', async (ctx, next) => {
   const books = await HotBook.getAll()
-  ctx.body = { books }
+  ctx.body = books
 })
 // 获取书籍详细信息
 router.get('/:id/detail', async (ctx) => {
@@ -32,9 +32,7 @@ router.get('/search', async (ctx) => {
     v.get('query.start'),
     v.get('query.count')
   )
-  ctx.body = {
-    result,
-  }
+  ctx.body = result
 })
 // 获取喜欢的书籍数量
 router.get('/favor/count', new Auth(AuthLevel.USER).m, async (ctx) => {
@@ -53,7 +51,7 @@ router.get('/:bookId/favor', new Auth(AuthLevel.USER).m, async (ctx) => {
   ctx.body = favor
 })
 // 新增短评
-router.post('/add/short_comment', new Auth(AuthLevel.USER).m, async (ctx) => {
+router.post('/add/shortComment', new Auth(AuthLevel.USER).m, async (ctx) => {
   const v = await new AddShortCommentValidator().validate(ctx, {
     id: 'bookId',
   })
@@ -69,9 +67,11 @@ router.get('/:bookId/shortComment', new Auth(AuthLevel.USER).m, async (ctx) => {
   // const comments = await BookComment.getComments(v.get('path.bookId'))
   // 由于 BookComment 定义了 toJSON 方法，这样查询到结果后，当 koa 隐式的进行 JSON 序列化的时候
   // 就会找到 对象上的 toJSON 方法，会对 toJSON 方法返回值进行序列化
-  const comments = await BookComment.getComments(v.get('path.bookId'))
+  const book_id = v.get('path.bookId')
+  const comments = await BookComment.getComments(book_id)
   ctx.body = {
     comments,
+    book_id,
   }
 })
 // 模拟实现热搜，因为热搜(推荐)需要深度学习的技术,不在web服务开发的范畴
@@ -82,7 +82,7 @@ router.get('/:bookId/shortComment', new Auth(AuthLevel.USER).m, async (ctx) => {
 // 热搜算的应该是频率和趋势，而不是简单的累加
 // 而且热搜很多时候也不是真的热搜，而是一个营销工具
 // 热搜 = 需要算法参考 + 人工编辑
-router.get('hotKeyword', async (ctx) => {
+router.get('/hotKeyword', async (ctx) => {
   ctx.body = {
     hot: ['ECMAScript', 'TypeScript', 'Python', '哈利·波特', '韩寒', '金庸'],
   }

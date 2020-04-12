@@ -8,9 +8,12 @@ const { Favor } = require('./favor')
 class Book extends Model {
   // 如果设置了构造函数，那么返回的实例里只会包含 定义了 defaultValue 的字段
   // 所以这里还是不要用构造函数传参了，
-  constructor() {
-    super()
-  }
+  // Sequelize 构造函数不能写，有大 bug，在新创建记录的时候如果这里有构造函数，那么 id 会获取不正确
+  // 期望获取是数值，但是会返回 { id: 1 } 这样的对象
+  // 使用 sequelize 的时候严禁使用 constructor
+  // constructor() {
+  //   super()
+  // }
   // 方法还是可以用实例方法(个人感觉没必要了，还不如直接改成类方法),在方法上传递参数
   async getDetail(id) {
     const url = util.format(global.config.yushu.detailUrl, id)

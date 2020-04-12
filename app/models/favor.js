@@ -113,7 +113,7 @@ class Favor extends Model {
    * @param {*} id
    */
   static async getBookFavor(uid, bookId) {
-    const favorNums = await Favor.count({
+    const favNums = await Favor.count({
       where: {
         art_id: bookId,
         type: 400,
@@ -127,7 +127,7 @@ class Favor extends Model {
       },
     })
     return {
-      favorNums,
+      favNums,
       likeStatus: myFavor ? 1 : 0,
     }
   }

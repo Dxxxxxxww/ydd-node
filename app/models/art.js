@@ -84,10 +84,24 @@ class Art {
         art = await Sentence.scope(scope).findOne(finder)
         break
       case 400:
+        const { Book } = require('./book')
+        art = await Book.scope(scope).findOne(finder)
+        if (!art) {
+          art = await Book.create({
+            id: artId,
+            // 因为 fav_nums 已经写了默认值了，所以这里可以不写
+          })
+        }
         break
       default:
         break
     }
+    // 不要在 api 上做处理(这样很麻烦，有多少个api就得改多少个)，数据库存的又是相对路径，应该在数据源头处理，这样方便
+    // 写在这里可以是可以，但是下面还有获取 arts 的地方， arts 如果要改写的话就要循环，所以还是得在数据源头(classic)处理
+    // if (art && art.image) {
+    //   let imgUrl = art.dataValues.image
+    //   art.dataValues.image = global.config.host + imgUrl
+    // }
     return art
   }
   /**

@@ -7,6 +7,7 @@ class BookComment extends Model {
   // 这种方法也不行，这里是 Sequelize 的bug
   // 如果设置了构造函数，那么返回的实例里只会包含 定义了 defaultValue 的字段
   // 可以取消注释访问 获取短评 api 尝试
+  // 使用 sequelize 的时候严禁使用 constructor
   // constructor() {
   // super()
   // this.exclude = []

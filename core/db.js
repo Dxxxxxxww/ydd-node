@@ -44,6 +44,17 @@ sequelize.sync() //sequelize.sync({force:true}),严重不推荐，当想添加�
 Model.prototype.toJSON = function () {
   // 通过拷贝的方式获取所有字段，不建议直接在原来的数据模型上删除
   let data = clone(this.dataValues)
+  // 又或者改写 toJSON 方法, 循环判断如果是 image 属性,就拼接。但是这种是特殊化处理，预设条件
+  // 是数据库存储的是不完整路径，但是书籍的图片是完整的路径，所以还得加强特殊，
+  // 再增加判断，如果它有http就说明它是完整的路径，就不拼接(个人觉得好麻烦啊，还不如不用 toJSON，使用scope，虽说scope需要在每个api地方使用，也挺麻烦)
+  for (const key in data) {
+    if (key === 'image') {
+      if (!data[key].startsWith('http')) {
+        data[key] = global.config.host + data[key]
+      }
+    }
+  }
+
   // unset(data, 'created_at')
   // unset(data, 'updated_at')
   // unset(data, 'deleted_at')
